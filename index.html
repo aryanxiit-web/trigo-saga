@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TrigSutra — Trigonometry Revision</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#223138">
+<meta name="description" content="JEE trigonometry formulas ranked by exam frequency, a timed recall quiz, and a persistent weak-formula list.">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="48x48" href="./icons/favicon-48.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+  :root{
+    --paper:#EEF1EE;
+    --paper-line: rgba(34,49,56,0.05);
+    --ink:#202B33;
+    --ink-soft:#5B6A70;
+    --board:#223138;
+    --board-soft:#2C3D45;
+    --chalk:#ECEAE2;
+    --chalk-soft: rgba(236,234,226,0.65);
+    --accent:#D9A441;
+    --accent-deep:#8A6318;
+    --core:#B23A2E;
+    --core-bg: rgba(178,58,46,0.09);
+    --common:#A8791C;
+    --common-bg: rgba(168,121,28,0.10);
+    --rare:#6B7785;
+    --rare-bg: rgba(107,119,133,0.10);
+    --card-bg:#FFFFFF;
+    --border: rgba(32,43,51,0.14);
+    --radius-s:4px;
+    --radius-m:10px;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background-color:var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, var(--paper-line) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, var(--paper-line) 0 1px, transparent 1px 28px);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  button{ font:inherit; }
+  *:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  #board{
+    position:sticky; top:0; z-index:10;
+    background:var(--board);
+  }
+  .board-row1{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:12px; padding:16px 20px 10px;
+  }
+  .brand h1{ font-family:var(--serif); font-size:1.5rem; margin:0; color:var(--chalk); font-weight:600; }
+  .brand .tagline{ display:block; font-size:0.76rem; color:var(--chalk-soft); margin-top:3px; max-width:320px; }
+
+  .chapter-toggle{ display:flex; gap:4px; background:rgba(0,0,0,0.18); padding:4px; border-radius:var(--radius-m); }
+  .seg-btn{ border:none; background:transparent; color:var(--chalk-soft); padding:8px 14px; border-radius:7px; font-size:0.85rem; cursor:pointer; }
+  .seg-btn.active{ background:var(--board-soft); color:var(--chalk); box-shadow: inset 0 0 0 1px rgba(217,164,65,0.4); }
+
+  .board-row2{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 20px 16px; gap:14px; flex-wrap:wrap;
+    border-top:1px solid rgba(255,255,255,0.07);
+  }
+  .mode-tabs{ display:flex; gap:18px; }
+  .mode-btn{ background:none; border:none; color:var(--chalk-soft); font-size:0.88rem; padding:6px 2px; cursor:pointer; border-bottom:2px solid transparent; }
+  .mode-btn.active{ color:var(--accent); border-bottom-color:var(--accent); }
+  .weak-count{ background:rgba(217,164,65,0.18); color:var(--accent); border-radius:10px; padding:1px 7px; font-size:0.73rem; margin-left:4px; }
+
+  .search-input{ background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); color:var(--chalk); padding:8px 12px; border-radius:8px; font-size:0.88rem; min-width:180px; flex:1; max-width:280px; }
+  .search-input::placeholder{ color:var(--chalk-soft); }
+
+  #main{ max-width:760px; margin:0 auto; padding:22px 16px 90px; }
+
+  .browse-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:6px; }
+  .stat-line{ font-size:0.82rem; color:var(--ink-soft); }
+  .legend-line{ font-size:0.74rem; color:var(--ink-soft); margin:4px 0 18px; }
+  .priority-chips, .revise-chips{ display:flex; gap:6px; flex-wrap:wrap; }
+  .chip{ border:1px solid var(--border); background:var(--card-bg); color:var(--ink-soft); font-size:0.8rem; padding:5px 12px; border-radius:999px; cursor:pointer; }
+  .chip.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+
+  .category{ margin:26px 0; }
+  .category h2{ font-family:var(--serif); font-size:1.05rem; font-weight:600; margin:0 0 6px; color:var(--ink); }
+  .category .rule{ height:1px; background:var(--border); margin-bottom:14px; }
+
+  .card{ display:flex; background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-m); margin-bottom:12px; overflow:hidden; }
+  .card-bar{ width:4px; flex-shrink:0; }
+  .bar-high{ background:var(--core); } .bar-medium{ background:var(--common); } .bar-low{ background:var(--rare); }
+  .card-body{ padding:14px 16px; flex:1; min-width:0; }
+  .card-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:4px; }
+  .card-head h3{ font-size:0.98rem; margin:0; color:var(--ink); font-weight:600; }
+  .card-head-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .tag{ font-size:0.66rem; padding:2px 8px; border-radius:999px; font-weight:700; white-space:nowrap; letter-spacing:0.2px; }
+  .tag-high{ background:var(--core-bg); color:var(--core); } .tag-medium{ background:var(--common-bg); color:var(--common); } .tag-low{ background:var(--rare-bg); color:var(--rare); }
+
+  .flag-btn{ background:none; border:none; cursor:pointer; color:var(--ink-soft); padding:2px; line-height:0; }
+  .flag-btn.active{ color:var(--core); }
+  .flag-btn svg{ width:17px; height:17px; display:block; }
+
+  .formula{ overflow-x:auto; padding:6px 0 2px; }
+  .tex-line{ padding:3px 0; }
+  .tex-line .katex-display{ margin:0.22em 0; }
+  .tex-line .katex{ font-size:1.02em; }
+
+  .note-toggle{ margin-top:6px; background:none; border:none; color:var(--accent-deep); font-size:0.78rem; cursor:pointer; padding:2px 0; text-decoration:underline; text-decoration-style:dotted; }
+  .note{ display:none; margin-top:8px; padding:10px 12px; background:rgba(217,164,65,0.10); border:1px dashed rgba(217,164,65,0.55); border-radius:8px; font-family:var(--serif); font-style:italic; font-size:0.87rem; color:#5b4415; transform:rotate(-0.4deg); line-height:1.4; }
+  .note.open{ display:block; }
+
+  .empty-state{ text-align:center; color:var(--ink-soft); padding:44px 20px; font-size:0.95rem; line-height:1.55; max-width:420px; margin:0 auto; }
+
+  .quadrant-grid{ display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:2px; max-width:320px; margin:8px auto 4px; border:1px solid var(--border); background:var(--border); }
+  .quad{ background:var(--card-bg); padding:16px 10px; text-align:center; }
+  .quad-label{ display:block; font-family:var(--serif); font-size:1.15rem; font-weight:700; color:var(--ink); }
+  .quad-pos{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-top:4px; }
+
+  .table-wrap{ overflow-x:auto; }
+  .mini-table{ border-collapse:collapse; width:100%; font-size:0.83rem; }
+  .mini-table th, .mini-table td{ border:1px solid var(--border); padding:6px 8px; text-align:center; white-space:nowrap; }
+  .mini-table th{ background:rgba(34,49,56,0.05); font-weight:600; }
+  .mini-table td.rowhead{ text-align:left; font-weight:600; background:rgba(34,49,56,0.03); }
+
+  .revise-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:22px; }
+  .shuffle-btn{ border:1px solid var(--border); background:var(--card-bg); padding:6px 14px; border-radius:999px; font-size:0.8rem; cursor:pointer; color:var(--ink-soft); }
+  .progress-line{ text-align:center; font-size:0.8rem; color:var(--ink-soft); margin-bottom:14px; }
+
+  .flip-stage{ perspective:1400px; margin:0 auto 20px; max-width:600px; }
+  .flip-card{ position:relative; min-height:230px; cursor:pointer; transform-style:preserve-3d; transition:transform 0.5s; }
+  .flip-card.flipped{ transform:rotateY(180deg); }
+  .flip-face{ position:absolute; inset:0; backface-visibility:hidden; background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-m); padding:26px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px; }
+  .flip-back{ transform:rotateY(180deg); overflow-y:auto; }
+  .face-cat{ font-size:0.74rem; color:var(--ink-soft); }
+  .flip-front h3{ font-family:var(--serif); font-size:1.3rem; margin:0; color:var(--ink); line-height:1.35; }
+  .tap-hint{ font-size:0.75rem; color:var(--accent-deep); }
+  .flip-back .note{ transform:none; text-align:left; width:100%; }
+  .flip-back .formula{ width:100%; }
+
+  .revise-actions{ display:flex; justify-content:center; gap:14px; margin-top:6px; }
+  .revise-btn{ border:none; padding:10px 22px; border-radius:999px; font-size:0.9rem; cursor:pointer; font-weight:600; }
+  .revise-btn.shaky{ background:var(--core-bg); color:var(--core); }
+  .revise-btn.solid{ background:#E4EFE7; color:#2E6B3E; }
+
+  .complete-screen{ text-align:center; padding:54px 20px; }
+  .complete-screen h2{ font-family:var(--serif); margin-bottom:6px; }
+  .restart-btn{ margin-top:14px; border:none; background:var(--ink); color:var(--paper); padding:10px 22px; border-radius:999px; cursor:pointer; font-size:0.9rem; }
+
+  .solid-btn{ border:1px solid var(--border); background:var(--card-bg); padding:5px 12px; border-radius:999px; font-size:0.76rem; cursor:pointer; color:var(--ink-soft); white-space:nowrap; }
+
+  button:disabled{ opacity:0.45; cursor:not-allowed; }
+
+  /* ---- Quiz: setup ---- */
+  .quiz-setup{ max-width:600px; margin:0 auto; }
+  .setup-section{ margin-bottom:22px; }
+  .setup-label{ font-size:0.8rem; color:var(--ink-soft); margin-bottom:8px; display:block; }
+  .start-quiz-btn{ border:none; background:var(--ink); color:var(--paper); padding:12px 26px; border-radius:999px; font-size:0.95rem; cursor:pointer; font-weight:600; }
+  .pool-count{ font-size:0.78rem; color:var(--ink-soft); margin-top:8px; }
+
+  /* ---- Quiz: active ---- */
+  .quiz-active-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; font-size:0.82rem; color:var(--ink-soft); flex-wrap:wrap; }
+  .quiz-quit-btn{ border:none; background:none; color:var(--ink-soft); font-size:0.78rem; cursor:pointer; text-decoration:underline; }
+  #quiz-timer-wrap{ margin:0 auto 22px; max-width:420px; transition:opacity 0.3s; }
+  .timer-row{ display:flex; justify-content:space-between; font-size:0.8rem; color:var(--ink-soft); margin-bottom:5px; }
+  #quiz-timer-num.urgent{ color:var(--core); font-weight:700; }
+  .timer-bar-bg{ height:6px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .timer-bar-fill{ height:100%; background:var(--accent); width:100%; transition:width 0.1s linear, background-color 0.3s; }
+  .timer-bar-fill.urgent{ background:var(--core); }
+  .quiz-prompt{ text-align:center; margin:6px 0 24px; padding:22px 18px; background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-m); max-width:600px; margin-left:auto; margin-right:auto; }
+  .quiz-options{ display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:600px; margin:0 auto; }
+  .quiz-option{ border:1px solid var(--border); background:var(--card-bg); border-radius:var(--radius-m); padding:14px 12px; cursor:pointer; text-align:center; color:var(--ink); }
+  .quiz-option:hover{ border-color:var(--accent); }
+  .quiz-option.locked{ pointer-events:none; }
+  .quiz-option.correct{ background:#E4EFE7; border-color:#2E6B3E; }
+  .quiz-option.wrong{ background:var(--core-bg); border-color:var(--core); }
+
+  /* ---- Quiz: result ---- */
+  .quiz-result{ text-align:center; padding:20px 10px; }
+  .quiz-score-big{ font-family:var(--serif); font-size:2.3rem; margin:0 0 6px; }
+  .quiz-result-sub{ color:var(--ink-soft); font-size:0.88rem; margin-bottom:24px; }
+  .missed-list{ text-align:left; max-width:480px; margin:0 auto 20px; }
+  .missed-item{ font-size:0.85rem; padding:9px 0; border-bottom:1px solid var(--border); color:var(--ink); }
+  .missed-item .formula-inline .katex{ font-size:0.95em; }
+  .missed-item span.src{ opacity:0.65; font-size:0.82em; }
+  .result-actions{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
+  .flag-missed-btn{ border:1px solid var(--core); background:var(--core-bg); color:var(--core); padding:9px 18px; border-radius:999px; cursor:pointer; font-size:0.85rem; }
+
+  @media (max-width:560px){
+    .board-row1, .board-row2{ flex-direction:column; align-items:stretch; }
+    .search-input{ max-width:none; }
+    .card-head{ flex-direction:column; }
+    .flip-face{ padding:18px; }
+    .flip-card{ min-height:260px; }
+    .quiz-options{ grid-template-columns:1fr; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .flip-card{ transition:none; }
+  }
+</style>
+</head>
+<body>
+  <div id="board"></div>
+  <main id="main"></main>
+  <footer class="app-footer">TrigSutra · personal revision tool · built from your trigonometry formula sheets</footer>
+
+<script>
+/* ============================ DATA ============================ */
+const DATA = [
+  // ---------- RATIOS & IDENTITIES ----------
+  { id:'r1', chapter:'ratios', category:'Foundations', priority:'low',
+    title:'Relating degree, grade & radian',
+    tex:['\\dfrac{D}{90}=\\dfrac{G}{100}=\\dfrac{2C}{\\pi}'],
+    trick:'D is the degree count, G is the grade count, C is the radian count — not the constant pi itself.',
+    keywords:'sexagesimal centesimal circular degree grade radian angle measurement' },
+
+  { id:'r2', chapter:'ratios', category:'Foundations', priority:'low',
+    title:'Ratio definitions in a right triangle',
+    tex:['\\sin\\theta=\\dfrac{P}{H},\\quad \\cos\\theta=\\dfrac{B}{H},\\quad \\tan\\theta=\\dfrac{P}{B}',
+         '\\csc\\theta=\\dfrac{H}{P},\\quad \\sec\\theta=\\dfrac{H}{B},\\quad \\cot\\theta=\\dfrac{B}{P}'],
+    trick:'Each ratio on the second line is the reciprocal of the one above it: cosec with sin, sec with cos, cot with tan.',
+    keywords:'perpendicular base hypotenuse basic definition sin cos tan' },
+
+  { id:'r3', chapter:'ratios', category:'Domain & Range', priority:'medium',
+    type:'table',
+    title:'Domain & range of each function',
+    table:{ headers:['Function','Domain','Range'],
+      rows:[
+        ['sin x','R','[-1, 1]'],
+        ['cos x','R','[-1, 1]'],
+        ['tan x','R − {(2n+1)π/2}','R'],
+        ['cosec x','R − {nπ}','R − (-1, 1)'],
+        ['sec x','R − {(2n+1)π/2}','R − (-1, 1)'],
+        ['cot x','R − {nπ}','R'],
+      ] },
+    trick:'tan and sec share the same forbidden points; cot and cosec share the same forbidden points — memorise two exclusion sets, not six.',
+    keywords:'domain range function table' },
+
+  { id:'r4', chapter:'ratios', category:'Signs by Quadrant', priority:'high',
+    type:'quadrant',
+    title:'Sign of ratios by quadrant (ASTC)',
+    trick:'Read anticlockwise from quadrant I: All, Sin, Tan, Cos are positive in turn. Mnemonic: "Add Sugar To Coffee."',
+    keywords:'astc quadrant sign cast positive negative' },
+
+  { id:'r5', chapter:'ratios', category:'Standard Angles', priority:'high',
+    type:'table',
+    title:'Ratios of standard angles',
+    table:{ headers:['','0°','30°','45°','60°','90°','120°','135°','150°','180°'],
+      rows:[
+        ['sin','0','1/2','1/√2','√3/2','1','√3/2','1/√2','1/2','0'],
+        ['cos','1','√3/2','1/√2','1/2','0','-1/2','-1/√2','-√3/2','-1'],
+        ['tan','0','1/√3','1','√3','ND','-√3','-1','-1/√3','0'],
+        ['cot','ND','√3','1','1/√3','0','-1/√3','-1','-√3','ND'],
+        ['sec','1','2/√3','√2','2','ND','-2','-√2','-2/√3','-1'],
+        ['cosec','ND','2','√2','2/√3','1','2/√3','√2','2','ND'],
+      ] },
+    trick:'For sin from 0° to 90°, the numerators run √0, √1, √2, √3, √4 all over 2. cos is the same pattern reversed. tan is just sin/cos — rebuild the whole row live instead of memorising nine columns.',
+    keywords:'standard angle table 30 45 60 90 values' },
+
+  { id:'r6', chapter:'ratios', category:'Sum & Difference Formulas', priority:'high',
+    title:'Sine & cosine of A ± B',
+    tex:['\\sin(A+B)=\\sin A\\cos B+\\cos A\\sin B',
+         '\\sin(A-B)=\\sin A\\cos B-\\cos A\\sin B',
+         '\\cos(A+B)=\\cos A\\cos B-\\sin A\\sin B',
+         '\\cos(A-B)=\\cos A\\cos B+\\sin A\\sin B'],
+    trick:'Memorise only cos(A−B) as the master identity. Swap B for −B to reach cos(A+B); shift A to (π/2 − A) in either to fall out sin(A±B). One identity in your head, four on the page.',
+    keywords:'compound angle addition sum difference formula' },
+
+  { id:'r7', chapter:'ratios', category:'Sum & Difference Formulas', priority:'high',
+    title:'Tangent & cotangent of A ± B',
+    tex:['\\tan(A+B)=\\dfrac{\\tan A+\\tan B}{1-\\tan A\\tan B}',
+         '\\tan(A-B)=\\dfrac{\\tan A-\\tan B}{1+\\tan A\\tan B}',
+         '\\tan\\left(\\dfrac{\\pi}{4}+\\theta\\right)=\\dfrac{1+\\tan\\theta}{1-\\tan\\theta}',
+         '\\tan\\left(\\dfrac{\\pi}{4}-\\theta\\right)=\\dfrac{1-\\tan\\theta}{1+\\tan\\theta}',
+         '\\cot(A+B)=\\dfrac{\\cot A\\cot B-1}{\\cot A+\\cot B}',
+         '\\cot(A-B)=\\dfrac{\\cot A\\cot B+1}{\\cot B-\\cot A}'],
+    trick:'The π/4 ± θ lines are just tan(A±B) with A = π/4 and tanA = 1 substituted in — do not treat them as a separate pair to memorise.',
+    keywords:'tan cot compound angle pi by 4' },
+
+  { id:'r8', chapter:'ratios', category:'Sum & Difference Formulas', priority:'medium',
+    title:'sin(A+B)sin(A−B) and cos(A+B)cos(A−B)',
+    tex:['\\sin(A+B)\\sin(A-B)=\\sin^2A-\\sin^2B=\\cos^2B-\\cos^2A',
+         '\\cos(A+B)\\cos(A-B)=\\cos^2A-\\sin^2B=\\cos^2B-\\sin^2A'],
+    trick:'Recognise this pattern instantly whenever a question asks you to prove something like sin²A − sin²B = sin(A+B)sin(A−B) — no expansion needed.',
+    keywords:'product identity sin squared cos squared' },
+
+  { id:'r9', chapter:'ratios', category:'Double Angle Formulas', priority:'high',
+    title:'Double angle: sin 2θ, cos 2θ, tan 2θ',
+    tex:['\\sin2\\theta=2\\sin\\theta\\cos\\theta=\\dfrac{2\\tan\\theta}{1+\\tan^2\\theta}',
+         '\\cos2\\theta=\\cos^2\\theta-\\sin^2\\theta=1-2\\sin^2\\theta=2\\cos^2\\theta-1=\\dfrac{1-\\tan^2\\theta}{1+\\tan^2\\theta}',
+         '\\tan2\\theta=\\dfrac{2\\tan\\theta}{1-\\tan^2\\theta}'],
+    trick:'Four versions of cos 2θ exist for a reason: pick the one that matches what is already in your expression. Sees sin terms, use 1−2sin²θ. Sees cos terms, use 2cos²θ−1. Whole problem in tan, use the tan form. Choosing right skips a conversion step.',
+    keywords:'double angle sin2x cos2x tan2x' },
+
+  { id:'r10', chapter:'ratios', category:'Double Angle Formulas', priority:'medium',
+    title:'Squares of cos A ± sin A',
+    tex:['(\\cos A\\pm\\sin A)^2=1\\pm\\sin2A'],
+    trick:'Expand expressions like (sinx+cosx)² in one line — this shows up constantly inside integrals and inequality bounds, not only in identity proofs.',
+    keywords:'square expand cos sin identity' },
+
+  { id:'r11', chapter:'ratios', category:'Half-Angle Formulas', priority:'high',
+    title:'Half-angle: sin(A/2), cos(A/2), tan(A/2)',
+    tex:['\\sin\\dfrac{A}{2}=\\pm\\sqrt{\\dfrac{1-\\cos A}{2}}',
+         '\\cos\\dfrac{A}{2}=\\pm\\sqrt{\\dfrac{1+\\cos A}{2}}',
+         '\\tan\\dfrac{A}{2}=\\pm\\sqrt{\\dfrac{1-\\cos A}{1+\\cos A}}'],
+    trick:'The sign of the root depends on the quadrant of A/2, not the quadrant of A — the number-one trap in half-angle JEE questions. Halve the interval first, then check the quadrant.',
+    keywords:'half angle sub multiple A by 2' },
+
+  { id:'r12a', chapter:'ratios', category:'Triple Angle & Related', priority:'medium',
+    title:'Triple angle: tan 3A',
+    tex:['\\tan3A=\\dfrac{3\\tan A-\\tan^3A}{1-3\\tan^2A}\\quad\\left(A\\neq n\\pi+\\dfrac{\\pi}{6}\\right)'],
+    trick:'Same shape as tan(A+B): sum of terms on top, 1 minus product terms below — just with the triple-angle coefficients 3 and 3.',
+    keywords:'triple angle tan3A' },
+
+  { id:'r12b', chapter:'ratios', category:'Triple Angle & Related', priority:'medium',
+    title:'Triple angle as a 60° ± θ product',
+    tex:['\\tan3\\theta=\\tan\\theta\\cdot\\tan(60^\\circ-\\theta)\\cdot\\tan(60^\\circ+\\theta)',
+         '\\sin\\theta\\cdot\\sin(60^\\circ-\\theta)\\cdot\\sin(60^\\circ+\\theta)=\\tfrac{1}{4}\\sin3\\theta',
+         '\\cos\\theta\\cdot\\cos(60^\\circ-\\theta)\\cdot\\cos(60^\\circ+\\theta)=\\tfrac{1}{4}\\cos3\\theta'],
+    trick:'This trio is the fast route through "find sin20° sin40° sin80°" style JEE questions — plug θ straight in rather than deriving sin3A or cos3A from scratch.',
+    keywords:'triple angle product 60 degree sin40 sin80' },
+
+  { id:'r12c', chapter:'ratios', category:'Triple Angle & Related', priority:'medium',
+    title:'Tan–cot manipulation identities',
+    tex:['\\tan\\theta=\\cot\\theta-2\\cot2\\theta',
+         '\\tan(A+B)-\\tan A-\\tan B=\\tan A\\tan B\\tan(A+B)'],
+    trick:'The second line is just a rearrangement of the ordinary tan(A+B) formula — handy for quickly proving tan-only "show that" identities without cross-multiplying.',
+    keywords:'tan cot rearrangement identity' },
+
+  { id:'r13', chapter:'ratios', category:'Sum ↔ Product Transformations', priority:'high',
+    title:'Sum/difference → product',
+    tex:['\\sin C+\\sin D=2\\sin\\dfrac{C+D}{2}\\cos\\dfrac{C-D}{2}',
+         '\\sin C-\\sin D=2\\cos\\dfrac{C+D}{2}\\sin\\dfrac{C-D}{2}',
+         '\\cos C+\\cos D=2\\cos\\dfrac{C+D}{2}\\cos\\dfrac{C-D}{2}',
+         '\\cos C-\\cos D=2\\sin\\dfrac{C+D}{2}\\sin\\dfrac{D-C}{2}'],
+    trick:'All four share the same first factor, (C+D)/2. Only the second factor changes. Watch cos C − cos D closely — it is the only line where the order flips to (D−C)/2.',
+    keywords:'sum to product transformation sinC sinD cosC cosD' },
+
+  { id:'r14', chapter:'ratios', category:'Sum ↔ Product Transformations', priority:'high',
+    title:'Product → sum/difference',
+    tex:['2\\sin A\\cos B=\\sin(A+B)+\\sin(A-B)',
+         '2\\cos A\\sin B=\\sin(A+B)-\\sin(A-B)',
+         '2\\cos A\\cos B=\\cos(A+B)+\\cos(A-B)',
+         '2\\sin A\\sin B=\\cos(A-B)-\\cos(A+B)'],
+    trick:'These are the sum-difference formulas added or subtracted in pairs — reconstruct them mentally from the identities above rather than memorising a fifth set.',
+    keywords:'product to sum transformation' },
+
+  { id:'r15', chapter:'ratios', category:'Mixed Manipulation Identities', priority:'medium',
+    title:'tan A ± tan B and cot A ± cot B',
+    tex:['\\tan A+\\tan B=\\dfrac{\\sin(A+B)}{\\cos A\\cos B}',
+         '\\tan A-\\tan B=\\dfrac{\\sin(A-B)}{\\cos A\\cos B}',
+         '\\cot A+\\cot B=\\dfrac{\\sin(A+B)}{\\sin A\\sin B}',
+         '\\cot A-\\cot B=\\dfrac{\\sin(B-A)}{\\sin A\\sin B}'],
+    trick:'Notice cot A − cot B flips to sin(B − A), not sin(A − B) — the one sign flip students most often get backwards.',
+    keywords:'tan plus tan cot plus cot' },
+
+  { id:'r16', chapter:'ratios', category:'Mixed Manipulation Identities', priority:'high',
+    title:'Mixed sum identities',
+    tex:['\\cos A+\\sin A=\\sqrt{2}\\sin\\left(\\dfrac{\\pi}{4}+A\\right)=\\sqrt{2}\\cos\\left(\\dfrac{\\pi}{4}-A\\right)',
+         '\\cos A-\\sin A=\\sqrt{2}\\sin\\left(\\dfrac{\\pi}{4}-A\\right)=\\sqrt{2}\\cos\\left(\\dfrac{\\pi}{4}+A\\right)',
+         '\\tan A+\\cot A=\\dfrac{1}{\\sin A\\cos A}=2\\csc2A',
+         '\\cot A-\\tan A=2\\cot2A'],
+    trick:'The last two lines are a matched pair worth learning together — they show up back to back in telescoping "prove" chains.',
+    keywords:'cosA sinA root2 cosec cot2A tan cot sum' },
+
+  { id:'r17', chapter:'ratios', category:'Mixed Manipulation Identities', priority:'medium',
+    title:'1 ± tan A tan B',
+    tex:['1+\\tan A\\tan B=\\dfrac{\\cos(A-B)}{\\cos A\\cos B}',
+         '1-\\tan A\\tan B=\\dfrac{\\cos(A+B)}{\\cos A\\cos B}'],
+    trick:'Notice the crossover: the "+" identity pairs with cos(A−B), and the "−" identity pairs with cos(A+B) — the signs swap between the two sides.',
+    keywords:'one plus tan tan one minus tan tan' },
+
+  { id:'r18', chapter:'ratios', category:'Mixed Manipulation Identities', priority:'medium',
+    title:'sin(A/2) ± cos(A/2)',
+    tex:['\\sin\\dfrac{A}{2}+\\cos\\dfrac{A}{2}=\\pm\\sqrt{1+\\sin A}',
+         '\\sin\\dfrac{A}{2}-\\cos\\dfrac{A}{2}=\\pm\\sqrt{1-\\sin A}'],
+    trick:'Square either side and it falls straight out: (sin(A/2) ± cos(A/2))² = 1 ± sinA. No separate proof needed.',
+    keywords:'half angle sum sin cos' },
+
+  { id:'r19', chapter:'ratios', category:'Exact Values of Special Angles', priority:'medium',
+    title:'Exact values at 15° and 75°',
+    tex:['\\sin15^\\circ=\\dfrac{\\sqrt3-1}{2\\sqrt2}=\\cos75^\\circ',
+         '\\cos15^\\circ=\\dfrac{\\sqrt3+1}{2\\sqrt2}=\\sin75^\\circ',
+         '\\tan15^\\circ=2-\\sqrt3=\\cot75^\\circ',
+         '\\cot15^\\circ=2+\\sqrt3=\\tan75^\\circ'],
+    trick:'Do not memorise these four — derive them in ten seconds using sin(45°−30°) and cos(45°−30°), formulas you already know cold. One method regenerates all four.',
+    keywords:'15 degree 75 degree exact value' },
+
+  { id:'r20', chapter:'ratios', category:'Exact Values of Special Angles', priority:'medium',
+    title:'Exact values at 18°, 36°, 54°, 72°',
+    tex:['\\sin18^\\circ=\\dfrac{\\sqrt5-1}{4}=\\cos72^\\circ',
+         '\\cos36^\\circ=\\dfrac{\\sqrt5+1}{4}=\\sin54^\\circ',
+         '\\sin36^\\circ=\\dfrac14\\sqrt{10-2\\sqrt5}=\\cos54^\\circ',
+         '\\cos18^\\circ=\\dfrac14\\sqrt{10+2\\sqrt5}=\\sin72^\\circ'],
+    trick:'These come from the golden ratio. If you forget one, regenerate it live using cos36° = 1 − 2sin²18°, starting from whichever value you do remember.',
+    keywords:'18 degree 36 golden ratio pentagon' },
+
+  { id:'r21', chapter:'ratios', category:'Exact Values of Special Angles', priority:'low',
+    title:'Exact values at 7.5° and 22.5° (rare)',
+    tex:['\\sin7\\tfrac12^\\circ=\\dfrac{\\sqrt{4-\\sqrt2-\\sqrt6}}{2\\sqrt2},\\quad \\cos7\\tfrac12^\\circ=\\dfrac{\\sqrt{4+\\sqrt2+\\sqrt6}}{2\\sqrt2}',
+         '\\sin22\\tfrac12^\\circ=\\tfrac12\\sqrt{2-\\sqrt2},\\quad \\cos22\\tfrac12^\\circ=\\tfrac12\\sqrt{2+\\sqrt2},\\quad \\tan22\\tfrac12^\\circ=\\sqrt2-1'],
+    trick:'Included for completeness — these rarely appear directly in JEE. Do not spend memorisation time here until the high-priority sections are solid.',
+    keywords:'7.5 degree 22.5 degree rare' },
+
+  { id:'r22', chapter:'ratios', category:'Sum of Three Angles', priority:'high',
+    title:'Sum of three angles: A + B + C',
+    tex:['\\sin(A+B+C)=\\cos A\\cos B\\cos C\\,(\\tan A+\\tan B+\\tan C-\\tan A\\tan B\\tan C)',
+         '\\cos(A+B+C)=\\cos A\\cos B\\cos C\\,(1-\\tan A\\tan B-\\tan B\\tan C-\\tan C\\tan A)',
+         '\\tan(A+B+C)=\\dfrac{\\sum\\tan A-\\tan A\\tan B\\tan C}{1-\\sum\\tan A\\tan B}'],
+    trick:'One pattern covers all three: numerator = sum of tans minus the product of all three; denominator = 1 minus the sum of pairwise products. The same shape extends to four or more angles.',
+    keywords:'sum three angles A plus B plus C expansion' },
+
+  { id:'r23', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'high',
+    title:'If A+B+C = 180°: double-angle sums',
+    tex:['\\sin2A+\\sin2B+\\sin2C=4\\sin A\\sin B\\sin C',
+         '\\cos2A+\\cos2B+\\cos2C=-1-4\\cos A\\cos B\\cos C'],
+    trick:'Master substitution: replace C with (π − A − B), then apply the ordinary sum-to-product formulas. Every identity in this whole section collapses to that one substitution — do not memorise each line separately.',
+    keywords:'triangle angle sum conditional identity sin2A cos2A' },
+
+  { id:'r24', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'high',
+    title:'If A+B+C = 180°: sin/cos sums',
+    tex:['\\sin A+\\sin B+\\sin C=4\\cos\\dfrac{A}{2}\\cos\\dfrac{B}{2}\\cos\\dfrac{C}{2}',
+         '\\cos A+\\cos B+\\cos C=1+4\\sin\\dfrac{A}{2}\\sin\\dfrac{B}{2}\\sin\\dfrac{C}{2}'],
+    trick:'Same substitution trick as above (C = π − A − B) reproduces both lines — treat this whole section as one technique, not a list to memorise.',
+    keywords:'triangle sinA sinB sinC cosA cosB cosC sum' },
+
+  { id:'r25', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'high',
+    title:'If A+B+C = 180°: tan/cot identities',
+    tex:['\\tan A+\\tan B+\\tan C=\\tan A\\tan B\\tan C',
+         '\\cot B\\cot C+\\cot C\\cot A+\\cot A\\cot B=1',
+         '\\tan\\dfrac{B}{2}\\tan\\dfrac{C}{2}+\\tan\\dfrac{C}{2}\\tan\\dfrac{A}{2}+\\tan\\dfrac{A}{2}\\tan\\dfrac{B}{2}=1',
+         '\\cot\\dfrac{A}{2}+\\cot\\dfrac{B}{2}+\\cot\\dfrac{C}{2}=\\cot\\dfrac{A}{2}\\cot\\dfrac{B}{2}\\cot\\dfrac{C}{2}'],
+    trick:'The first line is a favourite JEE "prove" trigger — whenever three angles summing to π meet a tan-only expression, try this identity before grinding through algebra.',
+    keywords:'tanA tanB tanC triangle identity favourite' },
+
+  { id:'r26', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'medium',
+    title:'If A+B+C = π: squared sums',
+    tex:['\\sin^2A+\\sin^2B-\\sin^2C=2\\sin A\\sin B\\cos C',
+         '\\cos^2A+\\cos^2B+\\cos^2C=1-2\\cos A\\cos B\\cos C',
+         '\\sin^2A+\\sin^2B+\\sin^2C=2+2\\cos A\\cos B\\cos C',
+         '\\cos^2A+\\cos^2B-\\cos^2C=1-2\\sin A\\sin B\\cos C'],
+    trick:null,
+    keywords:'squared sin cos triangle conditional' },
+
+  { id:'r26b', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'low',
+    title:'If A+B+C = π: half-angle squared sums',
+    tex:['\\sin^2\\dfrac A2+\\sin^2\\dfrac B2+\\sin^2\\dfrac C2=1-2\\sin\\dfrac A2\\sin\\dfrac B2\\sin\\dfrac C2',
+         '\\cos^2\\dfrac A2+\\cos^2\\dfrac B2+\\cos^2\\dfrac C2=2+2\\sin\\dfrac A2\\sin\\dfrac B2\\sin\\dfrac C2'],
+    trick:null,
+    keywords:'half angle squared triangle conditional' },
+
+  { id:'r26c', chapter:'ratios', category:'Conditional Identities (A+B+C = 180°)', priority:'low',
+    title:'If x+y+z = π/2',
+    tex:['\\sin^2x+\\sin^2y+\\sin^2z=1-2\\sin x\\sin y\\sin z',
+         '\\cos^2x+\\cos^2y+\\cos^2z=2+2\\sin x\\sin y\\sin z',
+         '\\sin2x+\\sin2y+\\sin2z=4\\cos x\\cos y\\cos z'],
+    trick:null,
+    keywords:'complementary sum pi by 2 x y z' },
+
+  { id:'r27', chapter:'ratios', category:'Important Results & Inequalities', priority:'high',
+    title:'Range of a·sin x + b·cos x + c',
+    tex:['-\\sqrt{a^2+b^2}\\ \\le\\ a\\sin x+b\\cos x\\ \\le\\ \\sqrt{a^2+b^2}',
+         '\\text{least value}=c-\\sqrt{a^2+b^2},\\qquad \\text{greatest value}=c+\\sqrt{a^2+b^2}'],
+    trick:'In MCQs you almost never need the full phase-shift derivation — just quote R = √(a²+b²) directly for the bound. Saves a full derivation step under time pressure.',
+    keywords:'range max min asinx bcosx amplitude' },
+
+  { id:'r28', chapter:'ratios', category:'Important Results & Inequalities', priority:'medium',
+    title:'sin² + cosec² and friends',
+    tex:['\\sin^2x+\\csc^2x\\ge2','\\cos^2x+\\sec^2x\\ge2','\\tan^2x+\\cot^2x\\ge2'],
+    trick:'All three are AM ≥ GM applied to a value and its reciprocal — equality holds exactly when that value is 1. Recognise the AM-GM shape instead of memorising three separate inequalities.',
+    keywords:'inequality am gm sin cosec cos sec tan cot' },
+
+  { id:'r29', chapter:'ratios', category:'Important Results & Inequalities', priority:'medium',
+    title:'Square-root half-angle identities',
+    tex:['\\sqrt{\\dfrac{1+\\sin\\theta}{1-\\sin\\theta}}=\\sec\\theta+\\tan\\theta',
+         '\\sqrt{\\dfrac{1-\\sin\\theta}{1+\\sin\\theta}}=\\sec\\theta-\\tan\\theta',
+         '\\sqrt{\\dfrac{1+\\cos\\theta}{1-\\cos\\theta}}=\\csc\\theta+\\cot\\theta',
+         '\\sqrt{\\dfrac{1-\\cos\\theta}{1+\\cos\\theta}}=\\csc\\theta-\\cot\\theta'],
+    trick:'Pattern: sine pairs with sec ± tan, cosine pairs with cosec ± cot. Whichever function sits inside the root tells you which pair to write down.',
+    keywords:'square root half angle sec tan cosec cot' },
+
+  { id:'r30', chapter:'ratios', category:'Important Results & Inequalities', priority:'high',
+    title:'Telescoping cosine product',
+    tex:['\\cos\\theta\\cdot\\cos2\\theta\\cdot\\cos2^2\\theta\\cdots\\cos2^{n-1}\\theta=\\dfrac{\\sin2^n\\theta}{2^n\\sin\\theta}'],
+    trick:'Multiply and divide by sinθ, then repeatedly apply sin2x = 2 sinx cosx — each factor "eats" the next cosine. This trick generalises to any product of cosines with doubling angles, not just this exact form.',
+    keywords:'telescoping product cosine doubling angle' },
+
+  { id:'r31', chapter:'ratios', category:'Important Results & Inequalities', priority:'medium',
+    title:'Sum of n terms in AP angles',
+    tex:['\\sin\\alpha+\\sin(\\alpha+\\beta)+\\cdots(n\\text{ terms})=\\dfrac{\\sin\\left(\\alpha+\\frac{n-1}{2}\\beta\\right)\\sin\\frac{n\\beta}{2}}{\\sin\\frac{\\beta}{2}}',
+         '\\cos\\alpha+\\cos(\\alpha+\\beta)+\\cdots(n\\text{ terms})=\\dfrac{\\cos\\left(\\alpha+\\frac{n-1}{2}\\beta\\right)\\sin\\frac{n\\beta}{2}}{\\sin\\frac{\\beta}{2}}'],
+    trick:'Both formulas share the same skeleton: (middle angle) times sin(nβ/2)/sin(β/2). Only sin versus cos on the middle-angle factor changes.',
+    keywords:'series sum n terms arithmetic progression angle' },
+
+  { id:'r32', chapter:'ratios', category:'Componendo-Dividendo', priority:'medium',
+    title:'Componendo & dividendo',
+    tex:['\\text{If } \\dfrac{p}{q}=\\dfrac{a}{b}, \\text{ then } \\dfrac{p-q}{p+q}=\\dfrac{a-b}{a+b} \\ \\text{ and } \\ \\dfrac{p+q}{p-q}=\\dfrac{a+b}{a-b}'],
+    trick:'Whenever a trig equation appears as a ratio (very common via the sine rule in triangle problems), componendo-dividendo isolates sums and differences instantly — far faster than cross-multiplying by hand.',
+    keywords:'componendo dividendo ratio manipulation' },
+
+  // ---------- TRIGONOMETRIC EQUATIONS ----------
+  { id:'e1', chapter:'equations', category:'Periods', priority:'medium',
+    type:'table',
+    title:'Periods of trigonometric functions',
+    table:{ headers:['Function family','Period'],
+      rows:[
+        ['sin(ax+b), cos(ax+b), sec(ax+b), cosec(ax+b)','2π / a'],
+        ['tan(ax+b), cot(ax+b)','π / a'],
+        ['|sin|, |cos|, |sec|, |cosec| of (ax+b)','π / a'],
+        ['|tan|, |cot| of (ax+b)','π / 2a'],
+      ] },
+    trick:'Taking the modulus halves the period for tan/cot, but leaves sin, cos, sec, cosec unchanged — it only reflects the negative half upward. A classic "find the period" trap.',
+    keywords:'period fundamental periodic function' },
+
+  { id:'e2', chapter:'equations', category:'General Solutions', priority:'high',
+    title:'The five basic general solutions',
+    tex:['\\sin\\theta=0\\ \\Rightarrow\\ \\theta=n\\pi',
+         '\\cos\\theta=0\\ \\Rightarrow\\ \\theta=(2n+1)\\dfrac{\\pi}{2}',
+         '\\tan\\theta=0\\ \\Rightarrow\\ \\theta=n\\pi',
+         '\\sin\\theta=1\\ \\Rightarrow\\ \\theta=(4n+1)\\dfrac{\\pi}{2}',
+         '\\cos\\theta=1\\ \\Rightarrow\\ \\theta=2n\\pi'],
+    trick:'These five are the atoms of every trig equation. Before attempting any equation, reduce it algebraically to one of these five basic forms.',
+    keywords:'general solution basic sin 0 cos 0 tan 0' },
+
+  { id:'e3', chapter:'equations', category:'General Solutions', priority:'high',
+    title:'General solution against a known angle α',
+    tex:['\\sin\\theta=\\sin\\alpha\\ \\Rightarrow\\ \\theta=n\\pi+(-1)^n\\alpha',
+         '\\cos\\theta=\\cos\\alpha\\ \\Rightarrow\\ \\theta=2n\\pi\\pm\\alpha',
+         '\\tan\\theta=\\tan\\alpha\\ \\Rightarrow\\ \\theta=n\\pi+\\alpha'],
+    trick:'Mnemonic — "SIN needs a SIGN": sine carries a (−1)ⁿ sign flip on α (SIN and SIGN both start SI-). Cosine and tangent never flip the sign of α, they just add ± or + directly. This one line prevents the most common general-solution mix-up in JEE Mains.',
+    keywords:'sin theta equals sin alpha general solution mnemonic' },
+
+  { id:'e4', chapter:'equations', category:'General Solutions', priority:'medium',
+    title:'General solution for squared equalities',
+    tex:['\\sin^2\\theta=\\sin^2\\alpha\\ \\Rightarrow\\ \\theta=n\\pi\\pm\\alpha',
+         '\\cos^2\\theta=\\cos^2\\alpha\\ \\Rightarrow\\ \\theta=n\\pi\\pm\\alpha',
+         '\\tan^2\\theta=\\tan^2\\alpha\\ \\Rightarrow\\ \\theta=n\\pi\\pm\\alpha'],
+    trick:'Squaring removes the sign ambiguity — that is exactly why all three collapse to the same nπ ± α shape, unlike their unsquared versions above which each behave differently.',
+    keywords:'squared sin theta general solution' },
+
+  { id:'e5', chapter:'equations', category:'Simultaneous Conditions', priority:'high',
+    title:'When two conditions are given together',
+    tex:['\\sin\\theta=\\sin\\alpha \\text{ and } \\cos\\theta=\\cos\\alpha\\ \\Rightarrow\\ \\theta=2n\\pi+\\alpha',
+         '\\sin\\theta=\\sin\\alpha \\text{ and } \\tan\\theta=\\tan\\alpha\\ \\Rightarrow\\ \\theta=2n\\pi+\\alpha',
+         '\\tan\\theta=\\tan\\alpha \\text{ and } \\cos\\theta=\\cos\\alpha\\ \\Rightarrow\\ \\theta=2n\\pi+\\alpha'],
+    trick:'Two simultaneous conditions always collapse to the tightest form, 2nπ + α — never the looser forms you would get from either condition alone. Combining kills the extra branch.',
+    keywords:'simultaneous both conditions common solution' },
+
+  { id:'e6', chapter:'equations', category:'a cosθ + b sinθ = c', priority:'high',
+    title:'Solving a·cosθ + b·sinθ = c',
+    tex:['\\text{Put } a=r\\cos\\phi,\\ b=r\\sin\\phi,\\ r=\\sqrt{a^2+b^2},\\ \\phi=\\tan^{-1}\\dfrac{b}{a}',
+         '\\cos(\\theta-\\phi)=\\dfrac{c}{\\sqrt{a^2+b^2}}',
+         '\\text{If } |c|\\le\\sqrt{a^2+b^2}:\\ \\ \\theta=2n\\pi\\pm\\alpha+\\phi,\\ \\ \\cos\\alpha=\\dfrac{|c|}{\\sqrt{a^2+b^2}}'],
+    trick:'Fast check first: if |c| > √(a²+b²), stop — there is no solution at all. That single inequality check saves you from grinding through a doomed equation, and it is a favourite "no solution" trap in JEE Mains.',
+    keywords:'acosx bsinx equals c auxiliary angle method' },
+
+  { id:'e7', chapter:'equations', category:'Two Equations Given', priority:'medium',
+    title:'Two equations given — common solution',
+    tex:['\\text{Find }\\theta\\in[0,2\\pi)\\text{ satisfying both equations, then general solution}=2n\\pi+\\theta_{\\text{common}}'],
+    trick:'Scan the standard-angle table (0°, 30°, 45°, 60°, 90°, ...) for a value satisfying both equations — you rarely need algebra here, just quick recognition.',
+    keywords:'two equations common solution rule' },
+];
+
+/* ============================ QUIZ BANK ============================
+   Each item: chapter, priority (reused from DATA), type ('recall' = pure
+   identity recall, 'numeric' = numbers plugged in), relatedId (links back
+   to a DATA card so a missed question can be flagged into the weak list),
+   prompt (LaTeX), options (4 LaTeX strings), correct (index into options
+   BEFORE shuffling — the app shuffles option order at quiz-build time). */
+const QUIZ = [
+  { id:'q1', chapter:'ratios', priority:'high', type:'recall', relatedId:'r6',
+    prompt:'\\sin(A+B)=?',
+    options:['\\sin A\\cos B+\\cos A\\sin B','\\sin A\\cos B-\\cos A\\sin B','\\cos A\\cos B-\\sin A\\sin B','\\cos A\\cos B+\\sin A\\sin B'], correct:0 },
+  { id:'q2', chapter:'ratios', priority:'high', type:'recall', relatedId:'r6',
+    prompt:'\\cos(A-B)=?',
+    options:['\\cos A\\cos B+\\sin A\\sin B','\\cos A\\cos B-\\sin A\\sin B','\\sin A\\cos B+\\cos A\\sin B','\\sin A\\cos B-\\cos A\\sin B'], correct:0 },
+  { id:'q3', chapter:'ratios', priority:'high', type:'recall', relatedId:'r9',
+    prompt:'\\cos2\\theta\\ \\text{in terms of }\\sin\\theta\\text{ only}=?',
+    options:['1-2\\sin^2\\theta','2\\sin^2\\theta-1','1-\\sin^2\\theta','2\\cos^2\\theta-1'], correct:0 },
+  { id:'q4', chapter:'ratios', priority:'high', type:'recall', relatedId:'r9',
+    prompt:'\\tan2\\theta=?',
+    options:['\\dfrac{2\\tan\\theta}{1-\\tan^2\\theta}','\\dfrac{2\\tan\\theta}{1+\\tan^2\\theta}','\\dfrac{\\tan^2\\theta}{1-\\tan^2\\theta}','\\dfrac{2\\tan\\theta}{\\tan^2\\theta-1}'], correct:0 },
+  { id:'q5', chapter:'ratios', priority:'high', type:'recall', relatedId:'r13',
+    prompt:'\\sin C+\\sin D=?',
+    options:['2\\sin\\dfrac{C+D}{2}\\cos\\dfrac{C-D}{2}','2\\cos\\dfrac{C+D}{2}\\sin\\dfrac{C-D}{2}','2\\sin\\dfrac{C+D}{2}\\sin\\dfrac{C-D}{2}','2\\cos\\dfrac{C+D}{2}\\cos\\dfrac{C-D}{2}'], correct:0 },
+  { id:'q6', chapter:'ratios', priority:'high', type:'recall', relatedId:'r13',
+    prompt:'\\cos C-\\cos D=?',
+    options:['2\\sin\\dfrac{C+D}{2}\\sin\\dfrac{D-C}{2}','2\\sin\\dfrac{C+D}{2}\\sin\\dfrac{C-D}{2}','-2\\cos\\dfrac{C+D}{2}\\cos\\dfrac{C-D}{2}','2\\cos\\dfrac{C+D}{2}\\sin\\dfrac{C-D}{2}'], correct:0 },
+  { id:'q7', chapter:'ratios', priority:'high', type:'recall', relatedId:'r14',
+    prompt:'2\\sin A\\cos B=?',
+    options:['\\sin(A+B)+\\sin(A-B)','\\sin(A+B)-\\sin(A-B)','\\cos(A-B)-\\cos(A+B)','\\cos(A+B)+\\cos(A-B)'], correct:0 },
+  { id:'q8', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r12a',
+    prompt:'\\tan3A=?',
+    options:['\\dfrac{3\\tan A-\\tan^3A}{1-3\\tan^2A}','\\dfrac{\\tan^3A-3\\tan A}{1-3\\tan^2A}','\\dfrac{3\\tan A-\\tan^3A}{1+3\\tan^2A}','\\dfrac{3\\tan A+\\tan^3A}{1-3\\tan^2A}'], correct:0 },
+  { id:'q9', chapter:'ratios', priority:'high', type:'recall', relatedId:'r11',
+    prompt:'\\cos\\dfrac{A}{2}=?\\quad(\\text{principal form})',
+    options:['\\pm\\sqrt{\\dfrac{1+\\cos A}{2}}','\\pm\\sqrt{\\dfrac{1-\\cos A}{2}}','\\pm\\sqrt{1+\\cos A}','\\dfrac{1+\\cos A}{2}'], correct:0 },
+  { id:'q10', chapter:'ratios', priority:'high', type:'recall', relatedId:'r16',
+    prompt:'\\cot A-\\tan A=?',
+    options:['2\\cot2A','2\\tan2A','\\cot2A','2\\csc2A'], correct:0 },
+  { id:'q11', chapter:'ratios', priority:'high', type:'recall', relatedId:'r16',
+    prompt:'\\tan A+\\cot A=?',
+    options:['2\\csc2A','2\\sec2A','2\\cot2A','\\csc2A'], correct:0 },
+  { id:'q12', chapter:'ratios', priority:'high', type:'recall', relatedId:'r23',
+    prompt:'\\text{If }A+B+C=180^\\circ:\\quad \\sin2A+\\sin2B+\\sin2C=?',
+    options:['4\\sin A\\sin B\\sin C','4\\cos A\\cos B\\cos C','-4\\cos A\\cos B\\cos C','4\\sin A\\sin B\\cos C'], correct:0 },
+  { id:'q13', chapter:'ratios', priority:'high', type:'recall', relatedId:'r25',
+    prompt:'\\text{If }A+B+C=180^\\circ:\\quad \\tan A+\\tan B+\\tan C=?',
+    options:['\\tan A\\tan B\\tan C','1','0','\\cot A\\cot B\\cot C'], correct:0 },
+  { id:'q14', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r27',
+    prompt:'\\text{Maximum value of } 3\\sin x+4\\cos x',
+    options:['5','7','3','4'], correct:0 },
+  { id:'q15', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r27',
+    prompt:'\\text{Minimum value of } 5\\sin x-12\\cos x+2',
+    options:['-11','-13','15','2'], correct:0 },
+  { id:'q16', chapter:'ratios', priority:'medium', type:'numeric', relatedId:'r19',
+    prompt:'\\tan15^\\circ=?',
+    options:['2-\\sqrt3','2+\\sqrt3','\\sqrt3-2','\\sqrt3-1'], correct:0 },
+  { id:'q17', chapter:'ratios', priority:'medium', type:'numeric', relatedId:'r20',
+    prompt:'\\sin18^\\circ=?',
+    options:['\\dfrac{\\sqrt5-1}{4}','\\dfrac{\\sqrt5+1}{4}','\\dfrac{\\sqrt5-1}{2}','\\dfrac{1-\\sqrt5}{4}'], correct:0 },
+  { id:'q18', chapter:'ratios', priority:'medium', type:'numeric', relatedId:'r12b',
+    prompt:'\\sin20^\\circ\\cdot\\sin40^\\circ\\cdot\\sin80^\\circ=?',
+    options:['\\dfrac{\\sqrt3}{8}','\\dfrac18','\\dfrac{\\sqrt3}{4}','\\dfrac38'], correct:0 },
+  { id:'q19', chapter:'ratios', priority:'medium', type:'numeric', relatedId:'r12b',
+    prompt:'\\cos20^\\circ\\cdot\\cos40^\\circ\\cdot\\cos80^\\circ=?',
+    options:['\\dfrac18','\\dfrac{\\sqrt3}{8}','\\dfrac14','\\dfrac38'], correct:0 },
+  { id:'q20', chapter:'ratios', priority:'high', type:'recall', relatedId:'r4',
+    prompt:'\\text{Quadrant II: which ratios are positive?}',
+    options:['\\sin,\\ \\csc','\\cos,\\ \\sec','\\tan,\\ \\cot','\\text{all six}'], correct:0 },
+  { id:'q21', chapter:'ratios', priority:'high', type:'recall', relatedId:'r4',
+    prompt:'\\text{Quadrant III: which ratios are positive?}',
+    options:['\\tan,\\ \\cot','\\sin,\\ \\csc','\\cos,\\ \\sec','\\text{none}'], correct:0 },
+  { id:'q22', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r6',
+    prompt:'\\sin75^\\circ=\\sin(45^\\circ+30^\\circ)=?',
+    options:['\\dfrac{\\sqrt6+\\sqrt2}{4}','\\dfrac{\\sqrt6-\\sqrt2}{4}','\\dfrac{\\sqrt2-\\sqrt6}{4}','\\dfrac{\\sqrt6+\\sqrt2}{2}'], correct:0 },
+  { id:'q23', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r7',
+    prompt:'\\text{If }\\tan\\theta=\\tfrac13:\\quad \\tan\\left(\\dfrac{\\pi}{4}+\\theta\\right)=?',
+    options:['2','\\tfrac12','\\tfrac43','\\tfrac32'], correct:0 },
+  { id:'q24', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r8',
+    prompt:'\\sin(A+B)\\sin(A-B)=?',
+    options:['\\sin^2A-\\sin^2B','\\cos^2A-\\cos^2B','\\sin^2A+\\sin^2B','\\cos^2A-\\sin^2B'], correct:0 },
+  { id:'q25', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r11',
+    prompt:'\\text{If }\\cos A=\\tfrac{7}{25}\\ (A\\text{ acute}):\\quad \\sin\\dfrac{A}{2}=?',
+    options:['\\tfrac35','\\tfrac45','\\tfrac{3}{25}','\\tfrac{24}{25}'], correct:0 },
+  { id:'q26', chapter:'ratios', priority:'medium', type:'numeric', relatedId:'r10',
+    prompt:'\\text{If }\\sin\\theta+\\cos\\theta=\\tfrac12:\\quad \\sin2\\theta=?',
+    options:['-\\tfrac34','\\tfrac34','\\tfrac14','-\\tfrac14'], correct:0 },
+  { id:'q27', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r6',
+    prompt:'\\text{If }\\sin A=\\tfrac35,\\ \\cos B=\\tfrac{5}{13}\\ (A,B\\text{ acute}):\\quad \\sin(A+B)=?',
+    options:['\\tfrac{63}{65}','-\\tfrac{33}{65}','-\\tfrac{16}{65}','\\tfrac{33}{65}'], correct:0 },
+  { id:'q28', chapter:'equations', priority:'high', type:'numeric', relatedId:'e3',
+    prompt:'\\sin\\theta=\\tfrac12\\ \\Rightarrow\\ \\theta=?',
+    options:['n\\pi+(-1)^n\\dfrac{\\pi}{6}','2n\\pi\\pm\\dfrac{\\pi}{6}','n\\pi+\\dfrac{\\pi}{6}','n\\pi\\pm\\dfrac{\\pi}{6}'], correct:0 },
+  { id:'q29', chapter:'equations', priority:'high', type:'numeric', relatedId:'e3',
+    prompt:'\\cos\\theta=-\\tfrac12\\ \\Rightarrow\\ \\theta=?',
+    options:['2n\\pi\\pm\\dfrac{2\\pi}{3}','n\\pi+(-1)^n\\dfrac{2\\pi}{3}','2n\\pi\\pm\\dfrac{\\pi}{3}','n\\pi\\pm\\dfrac{2\\pi}{3}'], correct:0 },
+  { id:'q30', chapter:'equations', priority:'high', type:'numeric', relatedId:'e3',
+    prompt:'\\tan\\theta=1\\ \\Rightarrow\\ \\theta=?',
+    options:['n\\pi+\\dfrac{\\pi}{4}','2n\\pi\\pm\\dfrac{\\pi}{4}','n\\pi+(-1)^n\\dfrac{\\pi}{4}','n\\pi\\pm\\dfrac{\\pi}{4}'], correct:0 },
+  { id:'q31', chapter:'equations', priority:'high', type:'recall', relatedId:'e2',
+    prompt:'\\sin\\theta=0\\ \\Rightarrow\\ \\theta=?',
+    options:['n\\pi','2n\\pi','n\\pi+\\dfrac{\\pi}{2}','(2n+1)\\dfrac{\\pi}{2}'], correct:0 },
+  { id:'q32', chapter:'equations', priority:'high', type:'recall', relatedId:'e2',
+    prompt:'\\cos\\theta=0\\ \\Rightarrow\\ \\theta=?',
+    options:['(2n+1)\\dfrac{\\pi}{2}','n\\pi','2n\\pi','\\dfrac{n\\pi}{2}'], correct:0 },
+  { id:'q33', chapter:'equations', priority:'high', type:'numeric', relatedId:'e6',
+    prompt:'3\\cos\\theta+4\\sin\\theta=6\\quad\\text{Does a solution exist?}',
+    options:['\\text{No solution}','\\text{Yes, unique }\\theta','\\text{Yes, infinite solutions}','\\text{Only at }\\theta=0'], correct:0 },
+  { id:'q34', chapter:'equations', priority:'high', type:'numeric', relatedId:'e6',
+    prompt:'\\text{For }a=5,\\ b=12:\\ \\text{largest possible } |c| \\text{ for a solution}',
+    options:['13','17','5','12'], correct:0 },
+  { id:'q35', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r3',
+    prompt:'\\text{Domain of }\\tan x\\text{ is }\\mathbb{R}\\text{ minus which set?}',
+    options:['\\left\\{(2n+1)\\dfrac{\\pi}{2}\\right\\}','\\{n\\pi\\}','\\{2n\\pi\\}','\\text{no restriction}'], correct:0 },
+  { id:'q36', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r17',
+    prompt:'1+\\tan A\\tan B=?',
+    options:['\\dfrac{\\cos(A-B)}{\\cos A\\cos B}','\\dfrac{\\cos(A+B)}{\\cos A\\cos B}','\\dfrac{\\sin(A-B)}{\\cos A\\cos B}','\\dfrac{\\cos(A-B)}{\\sin A\\sin B}'], correct:0 },
+  { id:'q37', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r15',
+    prompt:'\\cot A-\\cot B=?',
+    options:['\\dfrac{\\sin(B-A)}{\\sin A\\sin B}','\\dfrac{\\sin(A-B)}{\\sin A\\sin B}','\\dfrac{\\sin(A+B)}{\\sin A\\sin B}','\\dfrac{\\cos(A-B)}{\\sin A\\sin B}'], correct:0 },
+  { id:'q38', chapter:'ratios', priority:'high', type:'recall', relatedId:'r24',
+    prompt:'\\text{If }A+B+C=180^\\circ:\\quad \\cos A+\\cos B+\\cos C=?',
+    options:['1+4\\sin\\dfrac A2\\sin\\dfrac B2\\sin\\dfrac C2','4\\cos\\dfrac A2\\cos\\dfrac B2\\cos\\dfrac C2','-1+4\\cos\\dfrac A2\\cos\\dfrac B2\\sin\\dfrac C2','1-4\\sin\\dfrac A2\\sin\\dfrac B2\\sin\\dfrac C2'], correct:0 },
+  { id:'q39', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r29',
+    prompt:'\\sqrt{\\dfrac{1+\\sin\\theta}{1-\\sin\\theta}}=?',
+    options:['\\sec\\theta+\\tan\\theta','\\sec\\theta-\\tan\\theta','\\csc\\theta+\\cot\\theta','\\tan\\theta+\\cos\\theta'], correct:0 },
+  { id:'q40', chapter:'ratios', priority:'high', type:'recall', relatedId:'r22',
+    prompt:'\\sin(A+B+C)=\\cos A\\cos B\\cos C\\times\\ ?',
+    options:['\\tan A+\\tan B+\\tan C-\\tan A\\tan B\\tan C','1-\\tan A\\tan B-\\tan B\\tan C-\\tan C\\tan A','\\tan A+\\tan B+\\tan C+\\tan A\\tan B\\tan C','\\tan A\\tan B\\tan C-\\tan A-\\tan B-\\tan C'], correct:0 },
+  { id:'q41', chapter:'ratios', priority:'medium', type:'recall', relatedId:'r18',
+    prompt:'\\sin\\dfrac A2+\\cos\\dfrac A2=?',
+    options:['\\pm\\sqrt{1+\\sin A}','\\pm\\sqrt{1-\\sin A}','\\pm\\sqrt{1+\\cos A}','1+\\sin A'], correct:0 },
+  { id:'q42', chapter:'ratios', priority:'high', type:'numeric', relatedId:'r9',
+    prompt:'\\text{If }\\tan\\theta=\\tfrac34\\ (\\theta\\text{ acute}):\\quad \\sin2\\theta=?',
+    options:['\\tfrac{24}{25}','\\tfrac{7}{25}','\\tfrac34','\\tfrac67'], correct:0 },
+  { id:'q43', chapter:'equations', priority:'high', type:'recall', relatedId:'e5',
+    prompt:'\\sin\\theta=\\sin\\alpha\\ \\text{and}\\ \\cos\\theta=\\cos\\alpha\\ \\Rightarrow\\ \\theta=?',
+    options:['2n\\pi+\\alpha','n\\pi+(-1)^n\\alpha','n\\pi\\pm\\alpha','2n\\pi-\\alpha'], correct:0 },
+];
+
+/* ============================ STATE ============================ */
+let currentChapter = 'ratios';
+let currentMode = 'browse';
+let searchQuery = '';
+let priorityFilter = 'all';
+let weakIds = new Set();
+
+let reviseFilter = 'all';
+let reviseDeck = [];
+let reviseIndex = 0;
+let reviseFlipped = false;
+let reviseStats = { reviewed:0, shaky:0 };
+
+let quizSetupPriority = 'all';
+let quizSetupType = 'all';
+let quizSetupCount = 10;
+let quizSetupTime = 12;       // seconds, or null for no limit
+let quizPhase = 'setup';      // 'setup' | 'active' | 'result'
+let quizQueue = [];
+let quizIndex = 0;
+let quizAnswered = false;
+let quizScore = { correct:0, wrong:0, missedIds:new Set() };
+let quizTimerInterval = null;
+let quizTimeLeft = 0;
+let quizTotalTime = 0;
+
+/* ============================ STORAGE ============================
+   Standalone build: uses the browser's own localStorage, since
+   window.storage (Claude's artifact storage API) only exists inside
+   Claude.ai and is not available once this runs on GitHub Pages or
+   packaged as an Android app. Progress is saved per device/browser. */
+const STORAGE_KEY = 'trigsutra_weak_formula_ids';
+async function loadWeak(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ weakIds = new Set(JSON.parse(raw)); }
+  }catch(e){ weakIds = new Set(); }
+}
+async function saveWeak(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(weakIds))); }
+  catch(e){ console.error('Could not save progress', e); }
+}
+
+/* ============================ HELPERS ============================ */
+function escapeHtml(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+function renderTexLine(t){
+  try{ return katex.renderToString(t, {throwOnError:false, displayMode:true}); }
+  catch(e){ return '<span>'+escapeHtml(t)+'</span>'; }
+}
+function renderTexInline(t){
+  try{ return katex.renderToString(t, {throwOnError:false, displayMode:false}); }
+  catch(e){ return '<span>'+escapeHtml(t)+'</span>'; }
+}
+function renderTable(t){
+  let html = '<div class="table-wrap"><table class="mini-table"><thead><tr>';
+  t.headers.forEach(h=>{ html += '<th>'+escapeHtml(h)+'</th>'; });
+  html += '</tr></thead><tbody>';
+  t.rows.forEach(r=>{
+    html += '<tr>';
+    r.forEach((cell,i)=>{ html += '<td'+(i===0?' class="rowhead"':'')+'>'+escapeHtml(cell)+'</td>'; });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+function renderQuadrant(){
+  return '<div class="quadrant-grid">'
+    + '<div class="quad quad-2"><span class="quad-label">II</span><span class="quad-pos">sin, cosec +</span></div>'
+    + '<div class="quad quad-1"><span class="quad-label">I</span><span class="quad-pos">all +</span></div>'
+    + '<div class="quad quad-3"><span class="quad-label">III</span><span class="quad-pos">tan, cot +</span></div>'
+    + '<div class="quad quad-4"><span class="quad-label">IV</span><span class="quad-pos">cos, sec +</span></div>'
+    + '</div>';
+}
+function formulaBody(card){
+  if(card.type==='table') return renderTable(card.table);
+  if(card.type==='quadrant') return renderQuadrant();
+  return card.tex.map(t=>'<div class="tex-line">'+renderTexLine(t)+'</div>').join('');
+}
+function priorityLabel(p){ return p==='high' ? 'Core' : (p==='medium' ? 'Common' : 'Rare'); }
+function matchesSearch(c){
+  if(!searchQuery) return true;
+  const q = searchQuery.toLowerCase();
+  const hay = (c.title+' '+c.category+' '+(c.keywords||'')).toLowerCase();
+  return hay.indexOf(q) !== -1;
+}
+
+/* ============================ WEAK LIST ============================ */
+function toggleWeak(id){
+  if(weakIds.has(id)) weakIds.delete(id); else weakIds.add(id);
+  saveWeak();
+  document.querySelectorAll('[data-flag-id="'+id+'"]').forEach(btn=>{
+    btn.classList.toggle('active', weakIds.has(id));
+  });
+  updateWeakCountBadge();
+}
+function removeWeak(id){
+  weakIds.delete(id);
+  saveWeak();
+  updateWeakCountBadge();
+}
+function updateWeakCountBadge(){
+  const el = document.getElementById('weak-count-badge');
+  if(el) el.textContent = String(weakIds.size);
+}
+
+/* ============================ CARD MARKUP ============================ */
+const FLAG_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4a1 1 0 0 1 1-1h11.5a.5.5 0 0 1 .4.8L14 8l2.9 4.2a.5.5 0 0 1-.4.8H6a1 1 0 0 0-1 1v7"/></svg>';
+
+function cardRowHTML(card){
+  const isWeak = weakIds.has(card.id);
+  let html = '<div class="card">'
+    + '<div class="card-bar bar-'+card.priority+'"></div>'
+    + '<div class="card-body">'
+    + '<div class="card-head">'
+    + '<h3>'+escapeHtml(card.title)+'</h3>'
+    + '<div class="card-head-actions">'
+    + '<span class="tag tag-'+card.priority+'">'+priorityLabel(card.priority)+'</span>'
+    + '<button type="button" class="flag-btn '+(isWeak?'active':'')+'" data-action="toggle-flag" data-id="'+card.id+'" data-flag-id="'+card.id+'" title="Mark for review" aria-label="Mark for review">'+FLAG_ICON+'</button>'
+    + '</div></div>'
+    + '<div class="formula">'+formulaBody(card)+'</div>';
+  if(card.trick){
+    html += '<button type="button" class="note-toggle" data-action="toggle-note">Teacher\u2019s note</button>'
+      + '<div class="note">'+escapeHtml(card.trick)+'</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
+/* ============================ RENDER: BROWSE ============================ */
+function chipHTML(action, value, label, activeValue){
+  const active = activeValue===value ? 'active' : '';
+  return '<button type="button" class="chip '+active+'" data-action="'+action+'" data-value="'+value+'">'+label+'</button>';
+}
+function renderBrowseHTML(){
+  const chapterCards = DATA.filter(c=>c.chapter===currentChapter);
+  const total = chapterCards.length;
+  const weakCountThisChapter = chapterCards.filter(c=>weakIds.has(c.id)).length;
+  const filtered = chapterCards.filter(c=> (priorityFilter==='all'||c.priority===priorityFilter) && matchesSearch(c));
+
+  let html = '<div class="browse-toolbar">'
+    + '<div class="stat-line">'+total+' formulas in this chapter &middot; '+weakCountThisChapter+' flagged for review</div>'
+    + '<div class="priority-chips">'
+    + chipHTML('set-priority-filter','all','All',priorityFilter)
+    + chipHTML('set-priority-filter','high','Core',priorityFilter)
+    + chipHTML('set-priority-filter','medium','Common',priorityFilter)
+    + chipHTML('set-priority-filter','low','Rare',priorityFilter)
+    + '</div></div>'
+    + '<div class="legend-line">Core = must-know for JEE &middot; Common = shows up often &middot; Rare = occasional, included for completeness</div>';
+
+  if(filtered.length===0){
+    html += '<div class="empty-state">'+(searchQuery ? 'No formulas match \u201c'+escapeHtml(searchQuery)+'\u201d. Try a shorter search term.' : 'No formulas in this filter yet.')+'</div>';
+    return html;
+  }
+
+  const order = [];
+  const byCategory = new Map();
+  filtered.forEach(c=>{
+    if(!byCategory.has(c.category)){ byCategory.set(c.category, []); order.push(c.category); }
+    byCategory.get(c.category).push(c);
+  });
+  order.forEach(cat=>{
+    html += '<section class="category"><h2>'+escapeHtml(cat)+'</h2><div class="rule"></div>';
+    byCategory.get(cat).forEach(c=>{ html += cardRowHTML(c); });
+    html += '</section>';
+  });
+  return html;
+}
+
+/* ============================ RENDER: REVISE ============================ */
+function buildReviseDeck(){
+  let pool = DATA.filter(c=>c.chapter===currentChapter);
+  if(reviseFilter==='high') pool = pool.filter(c=>c.priority==='high');
+  if(reviseFilter==='weak') pool = pool.filter(c=>weakIds.has(c.id));
+  reviseDeck = pool.slice();
+  reviseIndex = 0;
+  reviseFlipped = false;
+}
+function renderReviseHTML(){
+  let html = '<div class="revise-toolbar">'
+    + '<div class="revise-chips">'
+    + chipHTML('set-revise-filter','all','All',reviseFilter)
+    + chipHTML('set-revise-filter','high','Core only',reviseFilter)
+    + chipHTML('set-revise-filter','weak','Weak list',reviseFilter)
+    + '</div>'
+    + '<button type="button" class="shuffle-btn" data-action="shuffle-deck">Shuffle</button>'
+    + '</div>';
+
+  if(reviseDeck.length===0){
+    html += '<div class="empty-state">'+(reviseFilter==='weak'
+      ? 'Nothing flagged yet. Flag a formula from Browse or Revise whenever you fumble it, and it will queue up here.'
+      : 'No formulas in this deck.')+'</div>';
+    return html;
+  }
+
+  if(reviseIndex >= reviseDeck.length){
+    html += '<div class="complete-screen">'
+      + '<h2>Deck cleared</h2>'
+      + '<p>'+reviseStats.reviewed+' reviewed &middot; '+reviseStats.shaky+' flagged shaky this round.</p>'
+      + '<button type="button" class="restart-btn" data-action="restart-deck">Go again</button>'
+      + '</div>';
+    return html;
+  }
+
+  const card = reviseDeck[reviseIndex];
+  const flippedClass = reviseFlipped ? 'flipped' : '';
+  html += '<div class="progress-line">Card '+(reviseIndex+1)+' of '+reviseDeck.length+'</div>'
+    + '<div class="flip-stage">'
+    + '<div class="flip-card '+flippedClass+'" data-action="flip-card">'
+    + '<div class="flip-face flip-front">'
+    + '<span class="face-cat">'+escapeHtml(card.category)+'</span>'
+    + '<h3>'+escapeHtml(card.title)+'</h3>'
+    + '<span class="tap-hint">Tap to reveal</span>'
+    + '</div>'
+    + '<div class="flip-face flip-back">'
+    + '<div class="formula">'+formulaBody(card)+'</div>'
+    + (card.trick ? '<div class="note open">'+escapeHtml(card.trick)+'</div>' : '')
+    + '</div></div></div>';
+
+  if(reviseFlipped){
+    html += '<div class="revise-actions">'
+      + '<button type="button" class="revise-btn shaky" data-action="revise-shaky">Still shaky</button>'
+      + '<button type="button" class="revise-btn solid" data-action="revise-solid">Got it</button>'
+      + '</div>';
+  }
+  return html;
+}
+function markRevise(isShaky){
+  const card = reviseDeck[reviseIndex];
+  if(!card) return;
+  if(isShaky){ weakIds.add(card.id); reviseStats.shaky++; }
+  else { weakIds.delete(card.id); }
+  reviseStats.reviewed++;
+  saveWeak();
+  updateWeakCountBadge();
+  reviseIndex++;
+  reviseFlipped = false;
+  renderMain();
+}
+
+/* ============================ RENDER: WEAK LIST ============================ */
+function weakRowHTML(card){
+  return '<div class="card">'
+    + '<div class="card-bar bar-'+card.priority+'"></div>'
+    + '<div class="card-body">'
+    + '<div class="card-head">'
+    + '<h3>'+escapeHtml(card.title)+'</h3>'
+    + '<button type="button" class="solid-btn" data-action="weak-remove" data-id="'+card.id+'">Mark solid</button>'
+    + '</div>'
+    + '<div class="formula">'+formulaBody(card)+'</div>'
+    + (card.trick ? '<div class="note open">'+escapeHtml(card.trick)+'</div>' : '')
+    + '</div></div>';
+}
+function renderWeakHTML(){
+  const weakCards = DATA.filter(c=>weakIds.has(c.id));
+  if(weakCards.length===0){
+    return '<div class="empty-state">Nothing flagged yet. While browsing or revising, tap the flag on any card you fumble &mdash; it will show up here for a fast pre-exam scan.</div>';
+  }
+  const groups = { ratios:[], equations:[] };
+  weakCards.forEach(c=>groups[c.chapter].push(c));
+  let html = '<div class="stat-line" style="margin-bottom:18px;">'+weakCards.length+' formulas flagged for review</div>';
+  if(groups.ratios.length){
+    html += '<section class="category"><h2>Trigonometric Ratios &amp; Identities</h2><div class="rule"></div>';
+    groups.ratios.forEach(c=>{ html += weakRowHTML(c); });
+    html += '</section>';
+  }
+  if(groups.equations.length){
+    html += '<section class="category"><h2>Trigonometric Equations</h2><div class="rule"></div>';
+    groups.equations.forEach(c=>{ html += weakRowHTML(c); });
+    html += '</section>';
+  }
+  return html;
+}
+
+/* ============================ QUIZ ============================ */
+function prepareQuizQuestion(q){
+  const idxArr = [0,1,2,3];
+  shuffleArray(idxArr);
+  const newOptions = idxArr.map(i=>q.options[i]);
+  const newCorrect = idxArr.indexOf(q.correct);
+  return Object.assign({}, q, { options:newOptions, correct:newCorrect });
+}
+function buildQuizQueue(){
+  let pool = QUIZ.filter(q=>q.chapter===currentChapter
+    && (quizSetupPriority==='all'||q.priority===quizSetupPriority)
+    && (quizSetupType==='all'||q.type===quizSetupType));
+  pool = pool.slice();
+  shuffleArray(pool);
+  const n = Math.min(quizSetupCount, pool.length);
+  quizQueue = pool.slice(0,n).map(prepareQuizQuestion);
+}
+function startNewQuiz(){
+  buildQuizQueue();
+  quizPhase = 'active';
+  quizIndex = 0;
+  quizAnswered = false;
+  quizScore = { correct:0, wrong:0, missedIds:new Set() };
+  renderMain();
+}
+function clearQuestionTimer(){
+  if(quizTimerInterval){ clearInterval(quizTimerInterval); quizTimerInterval = null; }
+}
+function startQuestionTimer(seconds){
+  clearQuestionTimer();
+  quizTimeLeft = seconds;
+  quizTotalTime = seconds;
+  updateTimerDOM();
+  quizTimerInterval = setInterval(()=>{
+    quizTimeLeft -= 0.1;
+    if(quizTimeLeft<=0){
+      quizTimeLeft = 0;
+      updateTimerDOM();
+      clearQuestionTimer();
+      handleQuizTimeout();
+    } else {
+      updateTimerDOM();
+    }
+  }, 100);
+}
+function updateTimerDOM(){
+  const numEl = document.getElementById('quiz-timer-num');
+  const barEl = document.getElementById('quiz-timer-bar');
+  const ratio = quizTotalTime>0 ? (quizTimeLeft/quizTotalTime) : 0;
+  if(numEl){ numEl.textContent = Math.ceil(quizTimeLeft)+'s'; numEl.classList.toggle('urgent', ratio<0.25); }
+  if(barEl){ barEl.style.width = Math.max(0, ratio*100)+'%'; barEl.classList.toggle('urgent', ratio<0.25); }
+}
+function handleQuizAnswer(index){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  clearQuestionTimer();
+  const q = quizQueue[quizIndex];
+  const isCorrect = index===q.correct;
+  if(isCorrect) quizScore.correct++; else { quizScore.wrong++; quizScore.missedIds.add(q.id); }
+  document.querySelectorAll('.quiz-option').forEach((btn,i)=>{
+    btn.classList.add('locked');
+    if(i===q.correct) btn.classList.add('correct');
+    else if(i===index) btn.classList.add('wrong');
+  });
+  const tw = document.getElementById('quiz-timer-wrap');
+  if(tw) tw.style.opacity = '0.35';
+  setTimeout(advanceQuiz, 1100);
+}
+function handleQuizTimeout(){
+  if(quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQueue[quizIndex];
+  quizScore.wrong++; quizScore.missedIds.add(q.id);
+  document.querySelectorAll('.quiz-option').forEach((btn,i)=>{
+    btn.classList.add('locked');
+    if(i===q.correct) btn.classList.add('correct');
+  });
+  setTimeout(advanceQuiz, 1100);
+}
+function advanceQuiz(){
+  quizIndex++;
+  quizAnswered = false;
+  if(quizIndex >= quizQueue.length){ quizPhase = 'result'; }
+  renderMain();
+}
+function renderQuizSetupHTML(){
+  const pool = QUIZ.filter(q=>q.chapter===currentChapter
+    && (quizSetupPriority==='all'||q.priority===quizSetupPriority)
+    && (quizSetupType==='all'||q.type===quizSetupType));
+  const timeActive = quizSetupTime===null ? 'none' : String(quizSetupTime);
+  let html = '<div class="quiz-setup">'
+    + '<p class="legend-line" style="margin-bottom:22px;">Answer before the clock runs out &mdash; built for the split-second recall you need mid-problem, not leisurely review.</p>'
+    + '<div class="setup-section"><span class="setup-label">Difficulty</span><div class="priority-chips">'
+    + chipHTML('set-quiz-priority','all','All',quizSetupPriority)
+    + chipHTML('set-quiz-priority','high','Core',quizSetupPriority)
+    + chipHTML('set-quiz-priority','medium','Common',quizSetupPriority)
+    + chipHTML('set-quiz-priority','low','Rare',quizSetupPriority)
+    + '</div></div>'
+    + '<div class="setup-section"><span class="setup-label">Question style</span><div class="priority-chips">'
+    + chipHTML('set-quiz-type','all','All',quizSetupType)
+    + chipHTML('set-quiz-type','recall','Pure recall',quizSetupType)
+    + chipHTML('set-quiz-type','numeric','With numbers',quizSetupType)
+    + '</div></div>'
+    + '<div class="setup-section"><span class="setup-label">Number of questions</span><div class="priority-chips">'
+    + chipHTML('set-quiz-count','5','5',String(quizSetupCount))
+    + chipHTML('set-quiz-count','10','10',String(quizSetupCount))
+    + chipHTML('set-quiz-count','15','15',String(quizSetupCount))
+    + chipHTML('set-quiz-count','20','20',String(quizSetupCount))
+    + '</div></div>'
+    + '<div class="setup-section"><span class="setup-label">Time per question</span><div class="priority-chips">'
+    + chipHTML('set-quiz-time','8','8s',timeActive)
+    + chipHTML('set-quiz-time','12','12s',timeActive)
+    + chipHTML('set-quiz-time','20','20s',timeActive)
+    + chipHTML('set-quiz-time','none','No limit',timeActive)
+    + '</div></div>'
+    + '<div style="text-align:center; margin-top:28px;">'
+    + '<button type="button" class="start-quiz-btn" data-action="start-quiz" '+(pool.length===0?'disabled':'')+'>Start quiz</button>'
+    + '<div class="pool-count">'+pool.length+' question'+(pool.length===1?'':'s')+' available with this setup</div>'
+    + '</div></div>';
+  return html;
+}
+function renderQuizActiveHTML(){
+  const q = quizQueue[quizIndex];
+  const total = quizQueue.length;
+  const answeredSoFar = quizScore.correct + quizScore.wrong;
+  let html = '<div class="quiz-active-header">'
+    + '<span>Question '+(quizIndex+1)+' of '+total+'</span>'
+    + '<span>Score: '+quizScore.correct+' / '+answeredSoFar+'</span>'
+    + '<button type="button" class="quiz-quit-btn" data-action="quit-quiz">Quit</button>'
+    + '</div>';
+  if(quizSetupTime!==null){
+    html += '<div id="quiz-timer-wrap">'
+      + '<div class="timer-row"><span>Time left</span><span id="quiz-timer-num">'+quizSetupTime+'s</span></div>'
+      + '<div class="timer-bar-bg"><div id="quiz-timer-bar" class="timer-bar-fill" style="width:100%"></div></div>'
+      + '</div>';
+  }
+  html += '<div class="quiz-prompt formula">'+renderTexLine(q.prompt)+'</div>'
+    + '<div class="quiz-options">';
+  q.options.forEach((opt,i)=>{
+    html += '<button type="button" class="quiz-option" data-action="quiz-answer" data-index="'+i+'">'+renderTexInline(opt)+'</button>';
+  });
+  html += '</div>';
+  return html;
+}
+function renderQuizResultHTML(){
+  const total = quizQueue.length;
+  const correct = quizScore.correct;
+  const missedArr = Array.from(quizScore.missedIds).map(id=>QUIZ.find(q=>q.id===id)).filter(Boolean);
+  let html = '<div class="quiz-result">'
+    + '<div class="quiz-score-big">'+correct+' / '+total+'</div>'
+    + '<div class="quiz-result-sub">correct under time pressure</div>';
+  if(missedArr.length>0){
+    html += '<div class="missed-list">';
+    missedArr.forEach(q=>{
+      const rel = DATA.find(d=>d.id===q.relatedId);
+      html += '<div class="missed-item"><span class="formula-inline">'+renderTexInline(q.prompt)+'</span>'
+        + (rel ? ' <span class="src">&mdash; '+escapeHtml(rel.title)+'</span>' : '')
+        + '</div>';
+    });
+    html += '</div>'
+      + '<button type="button" class="flag-missed-btn" data-action="flag-missed">Flag these '+missedArr.length+' for review</button>';
+  }
+  html += '<div class="result-actions">'
+    + '<button type="button" class="restart-btn" data-action="retry-quiz">Retry same setup</button>'
+    + '<button type="button" class="shuffle-btn" data-action="change-settings">Change settings</button>'
+    + '</div></div>';
+  return html;
+}
+function renderQuizHTML(){
+  if(quizPhase==='setup') return renderQuizSetupHTML();
+  if(quizPhase==='active') return renderQuizActiveHTML();
+  return renderQuizResultHTML();
+}
+
+/* ============================ MAIN RENDER DISPATCH ============================ */
+function renderMain(){
+  clearQuestionTimer();
+  const main = document.getElementById('main');
+  if(currentMode==='browse') main.innerHTML = renderBrowseHTML();
+  else if(currentMode==='revise') main.innerHTML = renderReviseHTML();
+  else if(currentMode==='quiz'){
+    main.innerHTML = renderQuizHTML();
+    if(quizPhase==='active' && !quizAnswered && quizSetupTime!==null){
+      startQuestionTimer(quizSetupTime);
+    }
+  }
+  else main.innerHTML = renderWeakHTML();
+}
+
+/* ============================ EVENT DELEGATION ============================ */
+function handleMainClick(e){
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const action = el.dataset.action;
+  if(action==='toggle-flag'){
+    toggleWeak(el.dataset.id);
+  } else if(action==='toggle-note'){
+    const note = el.nextElementSibling;
+    if(note){ note.classList.toggle('open'); }
+  } else if(action==='set-priority-filter'){
+    priorityFilter = el.dataset.value;
+    renderMain();
+  } else if(action==='set-revise-filter'){
+    reviseFilter = el.dataset.value;
+    buildReviseDeck();
+    renderMain();
+  } else if(action==='shuffle-deck'){
+    shuffleArray(reviseDeck);
+    reviseIndex = 0; reviseFlipped = false;
+    renderMain();
+  } else if(action==='restart-deck'){
+    buildReviseDeck();
+    reviseStats = { reviewed:0, shaky:0 };
+    renderMain();
+  } else if(action==='flip-card'){
+    reviseFlipped = !reviseFlipped;
+    renderMain();
+  } else if(action==='revise-shaky'){
+    markRevise(true);
+  } else if(action==='revise-solid'){
+    markRevise(false);
+  } else if(action==='weak-remove'){
+    removeWeak(el.dataset.id);
+    renderMain();
+  } else if(action==='set-quiz-priority'){
+    quizSetupPriority = el.dataset.value;
+    renderMain();
+  } else if(action==='set-quiz-type'){
+    quizSetupType = el.dataset.value;
+    renderMain();
+  } else if(action==='set-quiz-count'){
+    quizSetupCount = parseInt(el.dataset.value, 10);
+    renderMain();
+  } else if(action==='set-quiz-time'){
+    quizSetupTime = el.dataset.value==='none' ? null : parseInt(el.dataset.value, 10);
+    renderMain();
+  } else if(action==='start-quiz' || action==='retry-quiz'){
+    startNewQuiz();
+  } else if(action==='quit-quiz' || action==='change-settings'){
+    clearQuestionTimer();
+    quizPhase = 'setup';
+    renderMain();
+  } else if(action==='quiz-answer'){
+    handleQuizAnswer(parseInt(el.dataset.index, 10));
+  } else if(action==='flag-missed'){
+    quizScore.missedIds.forEach(function(qid){
+      const qq = QUIZ.find(function(x){ return x.id===qid; });
+      if(qq && qq.relatedId) weakIds.add(qq.relatedId);
+    });
+    saveWeak();
+    updateWeakCountBadge();
+    el.textContent = 'Flagged for review';
+    el.disabled = true;
+  }
+}
+
+/* ============================ HEADER ============================ */
+function buildHeader(){
+  const board = document.getElementById('board');
+  board.innerHTML = '<div class="board-row1">'
+    + '<div class="brand"><h1>TrigSutra</h1><span class="tagline">Formulas ranked by how often JEE actually asks them, not by textbook order</span></div>'
+    + '<div class="chapter-toggle" role="tablist">'
+    + '<button type="button" class="seg-btn active" data-chapter="ratios">Ratios &amp; Identities</button>'
+    + '<button type="button" class="seg-btn" data-chapter="equations">Equations</button>'
+    + '</div></div>'
+    + '<div class="board-row2">'
+    + '<div class="mode-tabs">'
+    + '<button type="button" class="mode-btn active" data-mode="browse">Browse</button>'
+    + '<button type="button" class="mode-btn" data-mode="revise">Revise</button>'
+    + '<button type="button" class="mode-btn" data-mode="quiz">Quiz</button>'
+    + '<button type="button" class="mode-btn" data-mode="weak">Weak list <span id="weak-count-badge" class="weak-count">0</span></button>'
+    + '</div>'
+    + '<input type="search" id="search-input" class="search-input" placeholder="Search a formula\u2026" />'
+    + '</div>';
+
+  board.querySelectorAll('.seg-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentChapter = btn.dataset.chapter;
+      board.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active', b===btn));
+      if(currentMode==='revise') buildReviseDeck();
+      renderMain();
+    });
+  });
+  board.querySelectorAll('.mode-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentMode = btn.dataset.mode;
+      board.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b===btn));
+      const search = document.getElementById('search-input');
+      search.style.display = currentMode==='browse' ? '' : 'none';
+      if(currentMode==='revise') buildReviseDeck();
+      renderMain();
+    });
+  });
+  document.getElementById('search-input').addEventListener('input', (e)=>{
+    searchQuery = e.target.value;
+    renderMain();
+  });
+}
+
+/* ============================ INIT ============================ */
+async function init(){
+  document.getElementById('main').innerHTML = '<div class="empty-state">Loading your saved progress\u2026</div>';
+  buildHeader();
+  await loadWeak();
+  updateWeakCountBadge();
+  document.getElementById('main').addEventListener('click', handleMainClick);
+  renderMain();
+}
+init();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(function(err){
+      console.warn('Service worker registration failed', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
